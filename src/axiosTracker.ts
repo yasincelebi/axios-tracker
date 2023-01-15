@@ -1,15 +1,16 @@
-import {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
-
+import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const namespace = "axios-tracker";
 interface RequestTracker {
     request: AxiosRequestConfig;
     startTime: number;
+    id: string;
 }
 
 interface ResponseTracker {
     response: AxiosResponse;
     endTime: number;
+    id: string;
 }
 
 const requestTracker: RequestTracker[] = [];
@@ -20,14 +21,16 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
         if (config[namespace]?.track) {
             const currentState = getCurrentState(config);
             currentState.startTime = Date.now();
-            console.log();
+            currentState.id = Date.now().toString();
             requestTracker.push({
                 request: config,
-                startTime: currentState.startTime
+                startTime: currentState.startTime,
+                id: currentState.id
             });
         }
         return config;
     });
+
 
     axios.interceptors.response.use((response) => {
         if (response.config[namespace]?.track) {
@@ -35,8 +38,18 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
             currentState.endTime = Date.now();
             responseTracker.push({
                 response,
-                endTime: currentState.endTime
+                endTime: currentState.endTime,
+                id: currentState.id
             });
+            const request = requestTracker.find((tracker) => tracker.id === currentState.id);
+            if (request) {
+                callbackFn({
+                    request: request.request,
+                    response,
+                    startTime: request.startTime,
+                    endTime: currentState.endTime
+                });
+            }
         }
         return response;
     }, (error) => {
@@ -46,36 +59,37 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
             responseTracker.push({
                 response: error.response,
                 endTime: currentState.endTime,
+                id: currentState.id
             });
 
-            callbackFn({
-                request: error.config,
-                response: error.response,
-                startTime: currentState.startTime,
-                endTime: currentState.endTime,
-            })
-
+            const request = requestTracker.find((tracker) => tracker.id === currentState.id);
+            if (request) {
+                callbackFn({
+                    request: request.request,
+                    response: error.response,
+                    startTime: request.startTime,
+                    endTime: currentState.endTime,
+                });
+            }
         }
         return Promise.reject(error);
     });
 
     return axios;
-}
-
-
+};
 
 const getCurrentState = (config: AxiosRequestConfig) => {
     let currentState: any = config[namespace] || {};
     currentState = currentState || {};
     config[namespace] = currentState;
     return currentState;
-}
+};
 
 declare module "axios" {
     interface AxiosRequestConfig {
         [namespace]?: {
             track?: boolean;
-        }
+        };
     }
 }
 export default axiosTracker;
