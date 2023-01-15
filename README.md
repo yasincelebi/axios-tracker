@@ -44,3 +44,8 @@ Takes in an axios instance and a callback function to handle the gathered data.
 ### `axios.defaults.axios-tracker = { track: true }`
 
 You can also set `axios-tracker` to `true` in `axios.defaults` to track all requests by default.
+
+
+## Warning
+
+This is a work in progress. It is not ready for production use. All risks are on you.
