@@ -43,12 +43,7 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
             });
             const request = requestTracker.find((tracker) => tracker.id === currentState.id);
             if (request) {
-                callbackFn({
-                    request: request.request,
-                    response,
-                    startTime: request.startTime,
-                    endTime: currentState.endTime
-                });
+                callbackFn({request, response});
             }
         }
         return response;
@@ -64,12 +59,7 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
 
             const request = requestTracker.find((tracker) => tracker.id === currentState.id);
             if (request) {
-                callbackFn({
-                    request: request.request,
-                    response: error.response,
-                    startTime: request.startTime,
-                    endTime: currentState.endTime,
-                });
+                callbackFn({request, response: error.response});
             }
         }
         return Promise.reject(error);
