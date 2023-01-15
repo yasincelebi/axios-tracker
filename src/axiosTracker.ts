@@ -1,22 +1,22 @@
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const namespace = "axios-tracker";
-interface RequestTracker {
+export interface RequestTracker {
     request: AxiosRequestConfig;
     startTime: number;
     id: string;
 }
 
-interface ResponseTracker {
+export interface ResponseTracker {
     response: AxiosResponse;
     endTime: number;
     id: string;
 }
 
-const requestTracker: RequestTracker[] = [];
+export const requestTracker: RequestTracker[] = [];
 const responseTracker: ResponseTracker[] = [];
 
-const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => {
+export const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => {
     axios.interceptors.request.use((config) => {
         if (config[namespace]?.track) {
             const currentState = getCurrentState(config);
