@@ -1,85 +1,74 @@
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-
+import { v4 as uuidv4 } from "uuid";
 const namespace = "axios-tracker";
-export interface RequestTracker {
+
+interface RequestTracker {
     request: AxiosRequestConfig;
     startTime: number;
     id: string;
 }
-
-export interface ResponseTracker {
+interface ResponseTracker {
     response: AxiosResponse;
     endTime: number;
     id: string;
 }
 
-export const requestTracker: RequestTracker[] = [];
-const responseTracker: ResponseTracker[] = [];
+let requestTracker: RequestTracker[] = [];
+let responseTracker: ResponseTracker[] = [];
 
-export const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => {
+const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => {
     axios.interceptors.request.use((config) => {
         if (config[namespace]?.track) {
-            const currentState = getCurrentState(config);
-            currentState.startTime = Date.now();
-            currentState.id = Date.now().toString();
+            const id = uuidv4();
             requestTracker.push({
                 request: config,
-                startTime: currentState.startTime,
-                id: currentState.id
+                startTime: Date.now(),
+                id
             });
+            config[namespace] = { id, track: true }
         }
         return config;
     });
 
-
     axios.interceptors.response.use((response) => {
         if (response.config[namespace]?.track) {
-            const currentState = getCurrentState(response.config);
-            currentState.endTime = Date.now();
+            const { id } = response.config[namespace];
             responseTracker.push({
                 response,
-                endTime: currentState.endTime,
-                id: currentState.id
+                endTime: Date.now(),
+                id
             });
-            const request = requestTracker.find((tracker) => tracker.id === currentState.id);
+            const request = requestTracker.find((tracker) => tracker.id === id);
             if (request) {
-                callbackFn({request, response});
+                callbackFn({ request, response });
             }
         }
         return response;
     }, (error) => {
         if (error.config[namespace]?.track) {
-            const currentState = getCurrentState(error.config);
-            currentState.endTime = Date.now();
+            const { id } = error.config[namespace];
             responseTracker.push({
                 response: error.response,
-                endTime: currentState.endTime,
-                id: currentState.id
+                endTime: Date.now(),
+                id
             });
-
-            const request = requestTracker.find((tracker) => tracker.id === currentState.id);
+            const request = requestTracker.find((tracker) => tracker.id === id);
             if (request) {
-                callbackFn({request, response: error.response});
+                callbackFn({ request, response: error.response });
             }
         }
         return Promise.reject(error);
     });
-
     return axios;
-};
-
-const getCurrentState = (config: AxiosRequestConfig) => {
-    let currentState: any = config[namespace] || {};
-    currentState = currentState || {};
-    config[namespace] = currentState;
-    return currentState;
 };
 
 declare module "axios" {
     interface AxiosRequestConfig {
         [namespace]?: {
+            id: string;
             track?: boolean;
-        };
+        }
     }
 }
+
 export default axiosTracker;
