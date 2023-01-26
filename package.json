@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
+    "@types/uuid": "^9.0.0",
     "axios": "^1.2.2",
     "typescript": "^4.9.3",
     "vite": "^4.0.0",
@@ -25,5 +26,8 @@
       "require": "./dist/axios-tracker.cjs"
     }
   },
-  "types": "./dist/axios-tracker.d.ts"
+  "types": "./dist/axios-tracker.d.ts",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
 }
