@@ -36,10 +36,12 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
             responseTracker.push({
                 response,
                 endTime: Date.now(),
-                id
+                id: id as string
             });
             const request = requestTracker.find((tracker) => tracker.id === id);
+
             if (request) {
+
                 callbackFn({ request, response });
             }
         }
@@ -65,7 +67,7 @@ const axiosTracker = (axios: AxiosInstance, callbackFn: (data: any) => void) => 
 declare module "axios" {
     interface AxiosRequestConfig {
         [namespace]?: {
-            id: string;
+            id?: string;
             track?: boolean;
         }
     }
