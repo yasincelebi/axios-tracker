@@ -1,1 +1,2 @@
-export * from './axiosTracker'
+export { default as axiosTracker } from './axiosTracker'
+
