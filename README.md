@@ -10,29 +10,29 @@ npm install axios-tracker
 
 ## Usage
 ```typescript
-import axios from 'axios';
-import axiosTracker from 'axios-tracker';
+import axios from "axios";
+import axiosTracker from "axios-tracker";
 
 const client = axios.create();
 
-client.interceptors.request.use(config => {
-config['axios-tracker'] = { track: true };
-return config;
+client.interceptors.request.use((config) => {
+    config["axios-tracker"] = { track: true };
+    return config;
 });
 
-const trackedClient = axiosTracker(client, data => {
-// data will contain the request, response, start time, and end time
-console.log(data)
+const trackedClient = axiosTracker(client, (data) => {
+    // data will contain the request, response, start time, and end time
+    console.log(data);
 });
 
 trackedClient
-.get('/test')
-.then(response => {
-// Handle success
-})
-.catch(error => {
-// Handle error
-});
+    .get("/test")
+    .then((response) => {
+        // Handle success
+    })
+    .catch((error) => {
+        // Handle error
+    });
 ```
 
 ## API
