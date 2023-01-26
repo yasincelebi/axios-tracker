@@ -2,18 +2,28 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
     "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "skipLibCheck": true
+    "declaration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true ,
+    "declarationMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "axios-tracker": [ "src/index.ts" ]
+    },
+    "typeRoots": [
+      "node_modules/@types",
+      "src/index.d.ts"
+    ]
   },
-  "include": ["src"]
+  "include": ["src"],
 }

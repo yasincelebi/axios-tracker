@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
+import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
     build: {
         lib: {
@@ -8,10 +9,11 @@ export default defineConfig({
             entry: resolve(__dirname, 'src/index.ts'),
             name: 'axios-tracker',
             // the proper extensions will be added
-            fileName: 'axios-tracker',
-            formats: ['cjs', 'es'],
+
+            fileName: (format) => `axios-tracker.${format}.js`,
+
         },
 
     },
-    plugins: [dts()]
+    plugins: [dts(),tsconfigPaths()]
 })
